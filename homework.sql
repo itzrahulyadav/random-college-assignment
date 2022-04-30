@@ -62,16 +62,16 @@ CREATE TABLE orders(
 /* inserting into the orders table */
 
 
-INSERT INTO orders VALUES(3001,18.69,10/03/1997,2008,1007);
-INSERT INTO orders VALUES(3003,767.19,10/03/1997,2001,1001);
-INSERT INTO orders VALUES(3002,1900.19,10/03/1997,2007,1004);
-INSERT INTO orders VALUES(3005,5160.45,10/03/1997,2003,1002);
-INSERT INTO orders VALUES(3006,1098.16,10/03/1997,2008,1007);
-INSERT INTO orders VALUES(3009,1713.23,10/04/1997,2002,1003);
-INSERT INTO orders VALUES(3007,75.75,10/04/1997,2004,1002);
-INSERT INTO orders VALUES(3008,4723.00,10/05/1997,2006,1001);
-INSERT INTO orders VALUES(3010,1309.95,10/06/1997,2004,1002);
-INSERT INTO orders VALUES(3011,9891.88,10/06/1997,2006,1001);
+INSERT INTO orders VALUES(3001,18.69,'1997-03-10',2008,1007);
+INSERT INTO orders VALUES(3003,767.19,'1997-03-10',2001,1001);
+INSERT INTO orders VALUES(3002,1900.19,'1997-03-10',2007,1004);
+INSERT INTO orders VALUES(3005,5160.45,'1997-03-10',2003,1002);
+INSERT INTO orders VALUES(3006,1098.16,'1997-03-10',2008,1007);
+INSERT INTO orders VALUES(3009,1713.23,'1997-04-10',2002,1003);
+INSERT INTO orders VALUES(3007,75.75,'1997-04-10',2004,1002);
+INSERT INTO orders VALUES(3008,4723.00,'1997-05-10',2006,1001);
+INSERT INTO orders VALUES(3010,1309.95,'1997-06-10',2004,1002);
+INSERT INTO orders VALUES(3011,9891.88,'1997-06-10',2006,1001);
 
 select * from orders;
 
@@ -152,7 +152,7 @@ ON o.SNUM = s.SNUM WHERE o.SNUM = 1007;
 
 SELECT count(orders.ONUM)
 FROM orders 
-WHERE ODATE = 10/3/1997;
+WHERE ODATE = '1997-03-10';
 
 /*ques 13 - calculate the total amount ordered */
 
@@ -273,7 +273,7 @@ where c.rating = copy.rating;
 
 select ONUM
 from Orders 
-where amount > (select avg(amount) from Orders where odate = 10/4/1997);
+where amount > (select avg(amount) from Orders where odate = '1997-04-10');
 
 #ques 29 - find the average commission of salesman in london;
 
@@ -324,7 +324,85 @@ where rating > (select avg(rating) from Customers where city = 'Surat');
 /*ques 34 - find all salesman with customers located in their cities 
 using any and in */
 
+SELECT s.sname,c.cname
+from Customers c
+join Salesman s
+on c.snum = s.snum
+where s.city = any(select city from Customers);
 
+/*ques 35 - find all salesman for whom there are customers that follow
+them in alphabetical order */
+
+SELECT s.sname
+from Salesman s;
+
+/*ques 36 - find all customers having rating greater than
+any customer in "Rome */
+
+select cname
+from Customers
+where rating > any(select rating from Customers where city = 'Rome');
+
+
+/*ques 37 - list all orders that has amount greater than atleast one of the 
+orders from from 6th october ,1997 */
+
+SELECT onum,odate
+from orders 
+where amount > any(select amount from orders where odate = '1997-06-10');
+
+/*ques 38 - find all orders with amount smaller than any amount for a
+customer in 'London' */
+
+SELECT onum,amount
+from orders 
+join Customers 
+on Customers.cnum = orders.cnum
+where amount < any(select amount from orders where city = 'London');
+
+/*ques 39 - find all customers who have greater
+ rating than every customer in rome */
+ 
+ select cname
+ from customers
+ where rating > all(select rating from customers where city = 'Rome');
+ 
+ /*ques 41 - produce the name and number of each salesman 
+ and each customer with more than one current order in the alphabetical
+ order of names */
+ 
+ select s.sname,s.snum,c.cname,c.cnum
+ from Customers c
+ join Salesman s
+ on s.snum = c.snum
+ join orders o
+ on o.cnum = c.cnum;
+ 
+ /*ques 43 - remove all orders from customer chirag
+ from the orders table */
+ 
+ 
+ delete o
+ from orders o
+ join customers c
+ on o.cnum = c.cnum
+ where c.cname = 'Chirag';
+ 
+ 
+/*ques 44 - set the rating of all the customers of piyush to 400 */
+
+update customers
+join Salesman
+on customers.snum = Salesman.snum
+set customers.rating = customers.rating + 100
+where Salesman.sname = 'piyush';
+
+/*ques 45 - increase the rating of all customers 
+in rome by 100 */
+
+update customers
+set rating = rating + 100
+where city = 'Rome';
 
 
 
